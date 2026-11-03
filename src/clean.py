@@ -30,22 +30,23 @@ def clean_page(page, repeated):
     lines = [l for l in lines if l and l not in repeated]
     lines = [l for l in lines if not PAGE_NUM.fullmatch(l)]
     text = "\n".join(lines)
-    text = re.sub(r"(?<=[a-zà-ÿ])-\n(?=[a-zà-ÿ])", "", text)  # words broken at line end
+    # words broken at line end
+    text = re.sub(r"(?<=[A-Za-zà-ÿ])-\n(?=[a-zà-ÿ])", "", text)
     text = re.sub(r"\s+", " ", text).strip()
     return text
 
 
 for txt_path in sorted(IN_DIR.glob("*.txt")):
     raw = txt_path.read_text(encoding="utf-8")
-    pages = raw.split("\f") if "\f" in raw else [raw]
+    pages = raw.split("\f")
 
     repeated = find_repeated_lines(pages)
-    cleaned = [clean_page(p, repeated) for p in pages]
-    cleaned = [p for p in cleaned if p]          # drop empty pages
+    cleaned = [clean_page(p, repeated) for p in pages]   # keep empty pages
 
     out_file = OUT_DIR / txt_path.name
     out_file.write_text("\f".join(cleaned), encoding="utf-8")
 
+    non_empty = sum(1 for p in cleaned if p)
     print(f"\n{txt_path.name}: {len(raw)} -> {sum(len(p) for p in cleaned)} characters")
-    print(f"  pages kept: {len(cleaned)}")
+    print(f"  pages: {len(cleaned)} ({non_empty} non-empty)")
     print(f"  repeated lines removed: {sorted(repeated)[:10]}")
