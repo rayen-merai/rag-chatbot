@@ -50,3 +50,4 @@ for txt_path in sorted(IN_DIR.glob("*.txt")):
     print(f"\n{txt_path.name}: {len(raw)} -> {sum(len(p) for p in cleaned)} characters")
     print(f"  pages: {len(cleaned)} ({non_empty} non-empty)")
     print(f"  repeated lines removed: {sorted(repeated)[:10]}")
+    
